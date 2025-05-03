@@ -59,6 +59,42 @@ const UserList: React.FC = () => {
       ? <ChevronUp className="h-4 w-4" /> 
       : <ChevronDown className="h-4 w-4" />;
   };
+
+  // Mobile registration card component
+  const RegistrationCard = ({ registration }: { registration: typeof registrations[0] }) => {
+    const event = events.find(e => e.id === registration.eventId);
+    
+    return (
+      <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <div className="flex items-center space-x-3 mb-3">
+          <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
+            <span className="text-primary-700 font-medium text-lg">
+              {registration.name.charAt(0).toUpperCase()}
+            </span>
+          </div>
+          <div>
+            <h3 className="font-medium text-gray-900">{registration.name}</h3>
+            <p className="text-sm text-gray-500">{event?.title || 'Unknown event'}</p>
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <div className="flex items-center text-sm text-gray-600">
+            <Phone className="h-4 w-4 mr-2" />
+            {registration.phone}
+          </div>
+          <div className="flex items-center text-sm text-gray-600">
+            <MapPin className="h-4 w-4 mr-2" />
+            {registration.location}
+          </div>
+          <div className="flex items-center text-sm text-gray-600">
+            <Calendar className="h-4 w-4 mr-2" />
+            {formatDate(registration.registrationDate)}
+          </div>
+        </div>
+      </div>
+    );
+  };
   
   return (
     <div className="animate-fade-in">
@@ -68,7 +104,7 @@ const UserList: React.FC = () => {
       </div>
       
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-6 space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-4">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-gray-400" />
@@ -76,7 +112,7 @@ const UserList: React.FC = () => {
           <input
             type="text"
             placeholder="Search by name, phone, or location"
-            className="input pl-10"
+            className="input pl-10 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -84,7 +120,7 @@ const UserList: React.FC = () => {
         
         <div>
           <select
-            className="input"
+            className="input w-full"
             value={selectedEvent}
             onChange={(e) => setSelectedEvent(e.target.value)}
           >
@@ -96,8 +132,21 @@ const UserList: React.FC = () => {
         </div>
       </div>
       
-      {/* Registrations table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      {/* Mobile view */}
+      <div className="md:hidden space-y-4">
+        {sortedRegistrations.length > 0 ? (
+          sortedRegistrations.map(registration => (
+            <RegistrationCard key={registration.id} registration={registration} />
+          ))
+        ) : (
+          <div className="bg-white rounded-lg shadow-sm p-6 text-center">
+            <p className="text-gray-500">No registrations found</p>
+          </div>
+        )}
+      </div>
+      
+      {/* Desktop view */}
+      <div className="hidden md:block bg-white rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -139,7 +188,16 @@ const UserList: React.FC = () => {
                   return (
                     <tr key={registration.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{registration.name}</div>
+                        <div className="flex items-center">
+                          <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
+                            <span className="text-primary-700 font-medium">
+                              {registration.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="ml-3">
+                            <div className="text-sm font-medium text-gray-900">{registration.name}</div>
+                          </div>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
